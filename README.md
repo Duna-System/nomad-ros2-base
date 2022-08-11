@@ -1,3 +1,5 @@
-# Commands
-`vcs import src < ros2.repos`
-`rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-5.3.1 urdfdom_headers"`
+# Nomad ROS2 Base with Docker
+This repository contains the tools for generating an Image for developing NOMAD ROS2 applications.
+
+## Commands
+`docker build . -t duna/nomad-base
