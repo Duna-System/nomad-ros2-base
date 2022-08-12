@@ -1,12 +1,17 @@
 FROM nvcr.io/nvidia/l4t-cuda:10.2.460-runtime
 
-ARG ROS_PKG=ros_base
 ENV ROS_DISTRO=galactic
-ENV ROS_ROOT=/opt/ros/${ROS_DISTRO}
+ENV ROS_ROOT=/app
+ENV DEPS_ROOT=/deps
 ENV ROS_PYTHON_VERSION=3
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
+
+WORKDIR ${ROS_ROOT}
+
+COPY ros2.repos .
+
 SHELL ["/bin/bash", "-c"] 
 
 RUN apt-get update && \
@@ -50,26 +55,38 @@ RUN python3 -m pip install -U \
 
 RUN python3 -m pip install -U importlib-metadata importlib-resources
 # Install new Cmake
-RUN mkdir -p /opt/cmake && cd /opt/cmake && \
-  wget https://github.com/Kitware/CMake/releases/download/v3.23.2/cmake-3.23.2-linux-aarch64.sh && \
+WORKDIR ${DEPS_ROOT}/cmake
+RUN  wget https://github.com/Kitware/CMake/releases/download/v3.23.2/cmake-3.23.2-linux-aarch64.sh && \
   chmod +x cmake-3.23.2-linux-aarch64.sh && \
-  yes | ./cmake-3.23.2-linux-aarch64.sh && \
-  export PATH=/opt/cmake/cmake-3.23.2-linux-aarch64/bin/:$PATH
+  yes | ./cmake-3.23.2-linux-aarch64.sh
 
-RUN ls -l /opt/cmake/cmake-3.23.2-linux-aarch64/bin/
+ENV PATH=${DEPS_ROOT}/cmake/cmake-3.23.2-linux-aarch64/bin/:${PATH}
 
 RUN cmake --version
-# Compile ROS
+
+# Compile & Install PCL
+RUN apt-get install -y \
+  libeigen3-dev \
+  libboost-all-dev \
+  libflann-dev
+
+WORKDIR ${DEPS_ROOT}
+RUN git clone https://github.com/PointCloudLibrary/pcl.git -b pcl-1.12.1 && \
+  mkdir -p pcl/build && cd pcl/build && \
+  cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF && \
+  make -j2 install
+
+# Get ROS dependencies
 RUN mkdir -p ${ROS_ROOT}/src && \
   cd ${ROS_ROOT} && \
-  wget https://raw.githubusercontent.com/Marcus-D-Forte/nomad-ros2-base/master/ros2.repos && \
-  ls && \
   vcs import src < ros2.repos && \
-  apt upgrade -y && \
+  apt-get upgrade -y && \
   rosdep init && \
   rosdep update && \
-  rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-5.3.1 urdfdom_headers" && \
+  rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-5.3.1 urdfdom_headers libpcl-dev pcl_ros" && \
   apt-get clean
+
+RUN apt-get remove -y libpcl-dev
 
 # build it!
 RUN cd ${ROS_ROOT} && \ 
@@ -78,6 +95,5 @@ RUN cd ${ROS_ROOT} && \
 # remove build files
 RUN rm -rf ${ROS_ROOT}/src && \
 rm -rf ${ROS_ROOT}/logs && \
-rm -rf ${ROS_ROOT}/build && \
-rm ${ROS_ROOT}/*.rosinstall
+rm -rf ${ROS_ROOT}/build
 
