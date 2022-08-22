@@ -344,6 +344,10 @@ repositories:
     type: git
     url: https://github.com/ros-drivers/gscam.git
     version: ros2
+  rosbridge_suite:
+    type: git
+    url: https://github.com/RobotWebTools/rosbridge_suite.git
+    version: ros2
 # Keep isaac_ros commented for now
 #  isaac_ros_argus_camera:
 #     type: git
