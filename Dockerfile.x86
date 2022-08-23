@@ -100,7 +100,8 @@ RUN rm -rf ${ROS_ROOT}/src && \
 rm -rf ${ROS_ROOT}/logs && \
 rm -rf ${ROS_ROOT}/build && \
 rm -rf ${DEPS_ROOT}/pcl && \
-rm -rf ${DEPS_ROOT}/googletest
+rm -rf ${DEPS_ROOT}/googletest && \
+apt-get autoremove -y && apt-get clean
 
 WORKDIR /
 
