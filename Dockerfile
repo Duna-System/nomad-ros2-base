@@ -10,8 +10,6 @@ ENV SHELL /bin/bash
 
 WORKDIR ${ROS_ROOT}
 
-COPY ros2.repos .
-
 SHELL ["/bin/bash", "-c"] 
 
 RUN apt-get update && \
@@ -81,6 +79,8 @@ RUN git clone https://github.com/PointCloudLibrary/pcl.git -b pcl-1.12.1 && \
   make -j2 install
 
 # Get ROS dependencies
+COPY ros2.repos ${ROS_ROOT}
+
 RUN mkdir -p ${ROS_ROOT}/src && \
   cd ${ROS_ROOT} && \
   vcs import src < ros2.repos && \

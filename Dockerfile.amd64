@@ -10,8 +10,6 @@ ENV SHELL /bin/bash
 
 WORKDIR ${ROS_ROOT}
 
-COPY ros2.repos .
-
 SHELL ["/bin/bash", "-c"] 
 
 RUN apt-get update && \
@@ -77,9 +75,11 @@ RUN git clone https://github.com/google/googletest.git -b v1.12.0 && \
 RUN git clone https://github.com/PointCloudLibrary/pcl.git -b pcl-1.12.1 && \
   mkdir -p pcl/build && cd pcl/build && \
   cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
-  make -j6 install 
+  make -j16 install
 
 # Get ROS dependencies
+COPY ros2.repos ${ROS_ROOT}
+
 RUN mkdir -p ${ROS_ROOT}/src && \
   cd ${ROS_ROOT} && \
   vcs import src < ros2.repos && \

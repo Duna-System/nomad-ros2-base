@@ -339,7 +339,7 @@ repositories:
   cv_bridge:
      type: git
      url: https://github.com/ros-perception/vision_opencv.git
-     version: ros2
+     version: humble
   gscam:
     type: git
     url: https://github.com/ros-drivers/gscam.git
