@@ -107,8 +107,8 @@ rm -rf ${ROS_ROOT}/logs && \
 rm -rf ${ROS_ROOT}/build && \
 rm -rf ${DEPS_ROOT}/pcl && \
 rm -rf ${DEPS_ROOT}/googletest && \
+rm -rf /var/lib/apt/lists/* && \
 apt-get autoremove -y && apt-get clean
-
 
 WORKDIR /
 
