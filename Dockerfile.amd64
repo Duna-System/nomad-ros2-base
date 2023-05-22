@@ -54,7 +54,8 @@ COPY ros2.repos ${ROS_EXTRA_ROOT}
 # Skip keys apparently does not work..
 RUN mkdir -p ${ROS_EXTRA_ROOT}/src && \
   cd ${ROS_EXTRA_ROOT} && \
-  vcs import src < ros2.repos
+  vcs import src < ros2.repos && \
+  rosdep install -y --from-paths src --ignore-src --skip-keys "libpcl-dev"
 
 RUN cd ${ROS_EXTRA_ROOT} && \ 
   source /opt/ros/humble/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
@@ -72,4 +73,3 @@ RUN rm -rf ${ROS_EXTRA_ROOT}/src && \
   apt-get autoremove -y && apt-get clean
 
 WORKDIR /
-
