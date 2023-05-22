@@ -15,6 +15,8 @@ SHELL ["/bin/bash", "-c"]
 RUN apt update && apt install -y \
   libgstreamer1.0-dev \
   libgstreamer-plugins-base1.0-dev \
+  libgstreamer-plugins-good1.0-dev \
+  gstreamer1.0-tools \ 
   libeigen3-dev \
   libboost-all-dev \
   libflann-dev \
@@ -49,10 +51,12 @@ RUN git clone https://github.com/PointCloudLibrary/pcl.git -b pcl-1.13.1 && \
 # Build extra ROS packages
 COPY ros2.repos ${ROS_EXTRA_ROOT}
 
+# Skip keys apparently does not work..
 RUN mkdir -p ${ROS_EXTRA_ROOT}/src && \
   cd ${ROS_EXTRA_ROOT} && \
   vcs import src < ros2.repos && \
-  rosdep install --from-paths src --ignore-src -y
+  source /opt/ros/humble/install/setup.bash && rosdep install --from-paths src --ignore-src -y --skip-keys "libpcl-dev" && \ 
+  apt purge -y libpcl-dev && apt autoremove -y
 
 RUN cd ${ROS_EXTRA_ROOT} && \ 
   source /opt/ros/humble/install/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
