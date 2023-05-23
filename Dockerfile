@@ -3,7 +3,7 @@ FROM dustynv/ros:humble-ros-base-l4t-r32.7.1
 
 ENV ROS_EXTRA_ROOT=/ros_extra
 ENV DEPS_ROOT=/deps
-
+ENV ROS_BASE_INSTALL=/opt/ros/humble/install/setup.bash
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
@@ -55,10 +55,10 @@ COPY ros2.repos ${ROS_EXTRA_ROOT}
 RUN mkdir -p ${ROS_EXTRA_ROOT}/src && \
   cd ${ROS_EXTRA_ROOT} && \
   vcs import src < ros2.repos && \
-  source /opt/ros/humble/install/setup.bash && rosdep install -y --from-paths src --ignore-src --skip-keys "libpcl-dev"
+  source ${ROS_BASE_INSTALL} && rosdep install -y --from-paths src --ignore-src --skip-keys "libpcl-dev"
 
 RUN cd ${ROS_EXTRA_ROOT} && \ 
-  source /opt/ros/humble/install/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+  source ${ROS_BASE_INSTALL} && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Source it
 RUN echo "source ${ROS_EXTRA_ROOT}/install/setup.bash" >> /root/.bashrc
