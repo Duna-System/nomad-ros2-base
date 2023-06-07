@@ -23,6 +23,7 @@ RUN apt update && apt install -y \
   libjsoncpp-dev \
   python3-pip \
   libusb-1.0-0-dev \
+  libi2c-dev \
   wget \
   zip
 

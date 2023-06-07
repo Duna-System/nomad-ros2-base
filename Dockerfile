@@ -24,6 +24,7 @@ RUN apt update && apt install -y \
   python3-pip \
   libusb-1.0-0-dev \
   wget \
+  libi2c-dev \
   zip
 
 # install some pip packages needed for testing. SMBUS is for I2C
