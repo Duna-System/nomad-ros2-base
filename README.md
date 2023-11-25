@@ -7,9 +7,10 @@ This repository contains the tools for generating a docker image for developing 
 `docker build . -t duna-nomad-base-testing -f Dockerfile.testing`
 
 
-## Running the test container.
+## Running the visualizer container.
 The test container has rviz2 installed. To use it, we have to stream GUI apps to the host.
 Reference: https://janert.me/guides/running-gui-applications-in-a-docker-container/
+NOTE: If you have RVIZ2 in the host machine, there is no need to run this container. Simply run the slam containers and the network will find the topics.
 
 Allow connection to Xserver
 1. (on host): `xhost +local:`
